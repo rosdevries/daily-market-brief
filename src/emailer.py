@@ -13,11 +13,12 @@ GITHUB_API = "https://api.github.com"
 
 def send_email(date: str, html: str, plaintext: str, subject: str = None) -> None:
     """Try direct SMTP first; fall back to GitHub Actions workflow dispatch."""
+    smtp_err = None
     try:
         _send_smtp(date, html, plaintext, subject)
         return
-    except Exception as smtp_err:
-        pass
+    except Exception as e:
+        smtp_err = e
 
     _send_via_github_actions(date, smtp_err)
 
