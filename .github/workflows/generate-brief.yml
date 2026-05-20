@@ -1,0 +1,36 @@
+name: Generate Daily Market Brief
+
+on:
+  schedule:
+    - cron: '30 12 * * 1-5'  # 8:30 AM ET (Mon-Fri); 2h before so-basic-trader runs
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # allows GITHUB_TOKEN to commit summaries via API
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate and send brief
+        env:
+          LLM_PROVIDER: gemini
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+          DOLLARYDOO_URL: ${{ secrets.DOLLARYDOO_URL }}
+          DOLLARYDOO_PASSWORD: ${{ secrets.DOLLARYDOO_PASSWORD }}
+        run: python main.py
