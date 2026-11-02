@@ -2,7 +2,8 @@ name: Generate Daily Market Brief
 
 on:
   schedule:
-    - cron: '30 12 * * 1-5'  # 8:30 AM ET (Mon-Fri); 2h before so-basic-trader runs
+    - cron: '30 9 * * 1-5'  # 9:30 AM Pacific (Mon-Fri), DST-aware; so-basic-trader uses the prior brief
+      timezone: "America/Los_Angeles"
   workflow_dispatch:
 
 jobs:
